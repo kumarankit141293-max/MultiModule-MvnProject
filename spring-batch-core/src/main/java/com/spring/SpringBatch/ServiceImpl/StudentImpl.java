@@ -4,9 +4,9 @@ import com.spring.SpringBatch.Models.Student;
 import com.spring.SpringBatch.Repository.StudentRepo;
 import com.spring.SpringBatch.Service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class StudentImpl implements StudentService {
@@ -19,7 +19,7 @@ public class StudentImpl implements StudentService {
         this.studentRepo = studentRepo;
     }
 
-    public List<Student> studentList(){
-        return studentRepo.findAll();
+    public Page<Student> studentList(Pageable pageable){
+        return studentRepo.findAll(pageable);
     }
 }
