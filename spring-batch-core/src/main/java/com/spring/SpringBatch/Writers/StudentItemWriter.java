@@ -1,19 +1,22 @@
 package com.spring.SpringBatch.Writers;
 
 import com.spring.SpringBatch.Models.Student;
-import jakarta.persistence.EntityManagerFactory;
-import org.springframework.batch.item.database.JpaItemWriter;
-import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
+import com.spring.SpringBatch.Repository.StudentRepo;
+import org.springframework.batch.item.ItemWriter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+
 
 @Configuration
 public class StudentItemWriter {
 
+    @Autowired
+    StudentRepo repository;
+
     @Bean
-    public JpaItemWriter<Student> writer(EntityManagerFactory emf) {
-        return new JpaItemWriterBuilder<Student>()
-                .entityManagerFactory(emf)
-                .build();
+    public ItemWriter<Student> writer(StudentRepo repository) {
+        return students -> repository.saveAll(students);
     }
 }

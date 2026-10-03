@@ -1,38 +1,27 @@
 package com.spring.SpringBatch.Readers;
-
+//import com.spring.SpringBatch.models.Student;
 import com.spring.SpringBatch.Models.Student;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
-import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 
 @Configuration
 public class StudentItemReader {
 
     @Bean
-    public FlatFileItemReader<Student> csvReader() {
+    @StepScope
+    public FlatFileItemReader<Student> reader(@Value("#{jobParameters['filePath']}") String filePath) {
         return new FlatFileItemReaderBuilder<Student>()
                 .name("studentItemReader")
-                .resource(new ClassPathResource("Students.csv"))
-                .linesToSkip(1) // Header skip karega
+                .resource(new FileSystemResource(filePath))
                 .delimited()
                 .names("name", "email", "age")
-                .fieldSetMapper(new BeanWrapperFieldSetMapper<Student>() {{
-                    setTargetType(Student.class);
-                }})
+                .targetType(Student.class)
+                .linesToSkip(1)   // ✅ Skip header row
                 .build();
     }
 }
-
-//    @Bean
-//    public JpaPagingItemReader<Student> studentDbReader(EntityManagerFactory emf) {
-//        return new JpaPagingItemReaderBuilder<Student>()
-//                .name("studentDbReader")
-//                .entityManagerFactory(emf)
-//                // Yeh query aapki existing Student entity se data uthayegi
-//                .queryString("SELECT s FROM Student s")
-//                .pageSize(10)
-//                .build();
-//    }

@@ -8,11 +8,13 @@ import com.spring.SpringBatch.Models.Student;
 public class StudentItemProcessor implements ItemProcessor<Student, Student> {
 
     @Override
-    public Student process(Student student) {
-        student.setName(student.getName().toUpperCase()); // Example transformation
+    public Student process(Student student) throws Exception {
+        // Example transformation
+        student.setName(student.getName().toUpperCase());
         return student;
     }
 }
+
 
 /*
 

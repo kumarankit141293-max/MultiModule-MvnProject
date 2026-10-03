@@ -3,39 +3,44 @@ package com.spring.SpringBatch.Jobs;
 import com.spring.SpringBatch.Models.Student;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
+@EnableBatchProcessing
 public class StudentJobConfig {
 
     @Bean
-    public Job studentJob(JobRepository jobRepository,
-                          PlatformTransactionManager transactionManager,
-                          ItemReader<Student> reader,
-                          ItemProcessor<Student, Student> processor,
-                          ItemWriter<Student> writer) {
+    public Job importJob(JobRepository jobRepository, Step step1) {
+        return new JobBuilder("importJob", jobRepository)
+                .start(step1)
+                .build();
+    }
 
-
-        Step step = new StepBuilder("student-step", jobRepository)
+    @Bean
+    public Step step1(JobRepository jobRepository,
+                      PlatformTransactionManager transactionManager,
+                      ItemReader<Student> reader,
+                      ItemProcessor<Student, Student> processor,
+                      ItemWriter<Student> writer) {
+        return new StepBuilder("step1", jobRepository)
                 .<Student, Student>chunk(10, transactionManager)
                 .reader(reader)
                 .processor(processor)
                 .writer(writer)
                 .build();
-
-        return new JobBuilder("student-job", jobRepository)
-                .start(step)
-                .build();
     }
 }
+
 
     /*    Spring Batch job jab run hoti hai, toh uski saari history/metadata
          (jaise job kab start hui, kitna time laga, kitne steps complete hue,
